@@ -1,7 +1,7 @@
 import { ethers, Wallet } from "ethers"
 import { readFileSync, writeFileSync } from "fs"
 
-import { HelloToken, HelloToken__factory } from "./ethers-contracts"
+import { HelloUSDC, HelloUSDC__factory } from "./ethers-contracts"
 
 export interface ChainInfo {
   description: string
@@ -9,23 +9,25 @@ export interface ChainInfo {
   rpc: string
   tokenBridge: string
   wormholeRelayer: string
-  wormhole: string
+  wormhole: string,
+  cctpTokenMessenger: string,
+  cctpMessageTransmitter: string,
+  USDC: string
 }
 
 export interface Config {
   chains: ChainInfo[]
 }
 export interface DeployedAddresses {
-  helloToken: Record<number, string>
-  erc20s: Record<number, string[]>
+  helloUSDC: Record<number, string>
 }
 
-export function getHelloToken(chainId: number) {
-  const deployed = loadDeployedAddresses().helloToken[chainId]
+export function getHelloUSDC(chainId: number) {
+  const deployed = loadDeployedAddresses().helloUSDC[chainId]
   if (!deployed) {
-    throw new Error(`No deployed hello token on chain ${chainId}`)
+    throw new Error(`No deployed hello usdc on chain ${chainId}`)
   }
-  return HelloToken__factory.connect(deployed, getWallet(chainId))
+  return HelloUSDC__factory.connect(deployed, getWallet(chainId))
 }
 
 export function getChain(chainId: number): ChainInfo {
@@ -64,8 +66,7 @@ export function loadDeployedAddresses(): DeployedAddresses {
     )
     if (!deployed) {
       _deployed = {
-        erc20s: [],
-        helloToken: [],
+        helloUSDC: [],
       }
     }
   }

@@ -1,5 +1,5 @@
 import { ethers } from "ethers"
-import { HelloToken__factory, ERC20Mock__factory } from "./ethers-contracts"
+import { HelloUSDC__factory } from "./ethers-contracts"
 import {
   loadConfig,
   getWallet,
@@ -12,22 +12,25 @@ import {
 export async function deploy() {
   const config = loadConfig()
 
-  // fuij and celo
   const deployed = loadDeployedAddresses()
-  for (const chainId of [6, 14]) {
+  // CCTP enabled chains are ethereum, avalanche, arbitrum, optimism
+  for (const chainId of [2, 6, 23, 24]) {
     const chain = getChain(chainId)
     const signer = getWallet(chainId)
 
-    const helloToken = await new HelloToken__factory(signer).deploy(
+    const helloUSDC = await new HelloUSDC__factory(signer).deploy(
       chain.wormholeRelayer,
       chain.tokenBridge!,
-      chain.wormhole
+      chain.wormhole,
+      chain.cctpMessageTransmitter,
+      chain.cctpTokenMessenger,
+      chain.USDC
     )
-    await helloToken.deployed()
+    await helloUSDC.deployed()
 
-    deployed.helloToken[chainId] = helloToken.address
+    deployed.helloUSDC[chainId] = helloUSDC.address
     console.log(
-      `HelloToken deployed to ${helloToken.address} on chain ${chainId}`
+      `HelloUSDC deployed to ${helloUSDC.address} on chain ${chainId}`
     )
   }
 

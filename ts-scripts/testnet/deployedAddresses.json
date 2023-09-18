@@ -1,23 +1,12 @@
 {
-  "erc20s": [
+  "helloUSDC": [
+    null,
+    null,
+    "0x61BF95f95AF96cC63540c7f038aD0A5DC8aA25b8",
     null,
     null,
     null,
-    null,
-    null,
-    null,
-    [
-      "0x1663D0d9EC712A2E5d344B7bAa2aAB3E7F2a005F"
-    ]
-  ],
-  "helloToken": [
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    "0xB3b908f5c0C313429De91FFb239Ab22eD5Bcb54a",
+    "0x4bfbA842aA2362F6fd2142e935d95Da191D6B014",
     null,
     null,
     null,
@@ -25,6 +14,22 @@
     null,
     null,
     null,
-    "0x9922398dcFaFC224fACcF7f0496Ab0BDF9482e59"
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    "0x27218e79DD97F794bb568F8f8cc0F4752d15FB10",
+    "0x2Cbb6305CCAE9e5dC57903064F73016D53C058B6",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
   ]
 }

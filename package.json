@@ -1,16 +1,15 @@
 {
-  "name": "hello-token",
+  "name": "hello-usdc",
   "version": "1.0.0",
   "main": "ts-scripts/main.ts",
-  "repository": "git@github.com:wormhole-foundation/hello-token.git",
+  "repository": "git@github.com:wormhole-foundation/hello-usdc.git",
   "author": "Wormhole Contributors",
   "license": "Apache 2.0",
   "scripts": {
     "main": "ts-node ./ts-scripts/main.ts",
-    "deploy": "npm run build; npm run deployMockToken; npm run deployHelloToken",
-    "deployMockToken": "ts-node ./ts-scripts/main.ts --deployMockToken",
-    "deployHelloToken": "ts-node ./ts-scripts/main.ts --deployHelloToken",
-    "build": "npm install; forge build; forge remappings > remappings.txt; npm run typechain",
+    "deploy": "npm run build; npm run deployHelloUSDC",
+    "deployHelloUSDC": "ts-node ./ts-scripts/main.ts --deployHelloUSDC",
+    "build": "npm install; forge build --via-ir; forge remappings > remappings.txt; npm run typechain",
     "typechain": "typechain --target ethers-v5 --out-dir ./ts-scripts/ethers-contracts ./out/**/*.json",
     "test": "jest --config ./ts-scripts/jest.config.js",
     "clean": "rm -rf ts-scripts/ethers-contracts; rm -rf out/;"
