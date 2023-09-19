@@ -1,16 +1,12 @@
-import { ethers } from "ethers"
 import { HelloUSDC__factory } from "./ethers-contracts"
 import {
-  loadConfig,
   getWallet,
   storeDeployedAddresses,
   getChain,
-  wait,
   loadDeployedAddresses,
 } from "./utils"
 
 export async function deploy() {
-  const config = loadConfig()
 
   const deployed = loadDeployedAddresses()
   // CCTP enabled chains are ethereum, avalanche, arbitrum, optimism

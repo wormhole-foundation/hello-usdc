@@ -48,7 +48,7 @@ describe("Hello USDC Integration Tests on Testnet", () => {
         
         console.log(`Transaction hash: ${tx.hash}`);
         await tx.wait();
-        console.log(`See transaction at: https://testnet.snowtrace.io/tx/${tx.hash}`);
+        console.log(`See transaction at: https://goerli.etherscan.io/tx/${tx.hash}`);
 
         await new Promise(resolve => setTimeout(resolve, 1000*15));
 
