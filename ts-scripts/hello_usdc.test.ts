@@ -16,8 +16,8 @@ import {
     CHAIN_ID_TO_NAME
 } from "@certusone/wormhole-sdk"
 
-const sourceChain = 2;
-const targetChain = 6;
+const sourceChain = 6;
+const targetChain = 24;
 
 describe("Hello USDC Integration Tests on Testnet", () => {
     test("Tests the sending of USDC", async () => {
@@ -48,7 +48,7 @@ describe("Hello USDC Integration Tests on Testnet", () => {
         
         console.log(`Transaction hash: ${tx.hash}`);
         await tx.wait();
-        console.log(`See transaction at: https://goerli.etherscan.io/tx/${tx.hash}`);
+        console.log(`See transaction at: https://testnet.snowtrace.io/tx/${tx.hash}`);
 
         await new Promise(resolve => setTimeout(resolve, 1000*15));
 

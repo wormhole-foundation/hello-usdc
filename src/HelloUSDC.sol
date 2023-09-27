@@ -34,7 +34,7 @@ contract HelloUSDC is CCTPSender, CCTPReceiver {
 
         IERC20(USDC).transferFrom(msg.sender, address(this), amount);
 
-        bytes memory payload = abi.encode(recipient, amount);
+        bytes memory payload = abi.encode(recipient);
         sendUSDCWithPayloadToEvm(
             targetChain, 
             targetHelloUSDC, // address (on targetChain) to send token and payload to
@@ -52,12 +52,8 @@ contract HelloUSDC is CCTPSender, CCTPReceiver {
         uint16, // sourceChain
         bytes32 // deliveryHash
     ) internal override onlyWormholeRelayer {
-        (address recipient, uint256 amount) = abi.decode(payload, (address, uint256));
+        (address recipient) = abi.decode(payload, (address));
 
-        // Check that the correct amount was received
-        // It is important to verify that the 'USDC
-        require(amount == amountUSDCReceived, "Wrong amount received");
-
-        IERC20(USDC).transfer(recipient, amount);
+        IERC20(USDC).transfer(recipient, amountUSDCReceived);
     }
 }
