@@ -50,7 +50,7 @@ describe("Hello USDC Integration Tests on Testnet", () => {
         await tx.wait();
         console.log(`See transaction at: https://testnet.snowtrace.io/tx/${tx.hash}`);
 
-        await new Promise(resolve => setTimeout(resolve, 1000*15));
+        await new Promise(resolve => setTimeout(resolve, 1000*60));
 
         /*
         console.log("Checking relay status");
