@@ -62,5 +62,5 @@ describe("Hello USDC Integration Tests on Testnet", () => {
         const walletCurrentBalanceOfUSDC = await USDCTargetChain.balanceOf(walletTargetChainAddress);
 
         expect(walletCurrentBalanceOfUSDC.sub(walletOriginalBalanceOfUSDC).toString()).toBe(arbitraryTokenAmount.toString());
-    }, 60*1000) // timeout
+    }, 120*1000) // timeout
 })
