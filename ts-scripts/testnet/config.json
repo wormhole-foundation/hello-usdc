@@ -43,6 +43,17 @@
       "cctpTokenMessenger": "0xeb08f243E5d3FCFF26A9E38Ae5520A669f4019d0",
       "cctpMessageTransmitter": "0xa9fB1b3009DCb79E2fe346c16a604B8Fa8aE0a79",
       "USDC": "0x5425890298aed601595a70AB815c96711a31Bc65"
+    },
+    {
+      "description": "Base goerli",
+      "chainId": 30,
+      "rpc": "https://goerli.base.org",
+      "tokenBridge": "0xA31aa3FDb7aF7Db93d18DDA4e19F811342EDF780",
+      "wormholeRelayer": "0xea8029CD7FCAEFFcD1F53686430Db0Fc8ed384E1",
+      "wormhole": "0x23908A62110e21C04F3A4e011d24F901F911744A",
+      "cctpTokenMessenger": "0x877b8e8c9e2383077809787ED6F279ce01CB4cc8",
+      "cctpMessageTransmitter": "0x9ff9a4da6f2157A9c82CE756f8fD7E0d75be8895",
+      "USDC": "0xF175520C52418dfE19C8098071a252da48Cd1C19"
     }
   ]
 }

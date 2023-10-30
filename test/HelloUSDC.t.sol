@@ -25,7 +25,6 @@ contract HelloUSDCTest is WormholeRelayerBasicTest {
         mintUSDC(sourceChain, address(this), 5000e18);
         helloSource = new HelloUSDC(
             address(relayerSource),
-            address(tokenBridgeSource),
             address(wormholeSource),
             address(sourceChainInfo.circleMessageTransmitter),
             address(sourceChainInfo.circleTokenMessenger),
@@ -38,7 +37,6 @@ contract HelloUSDCTest is WormholeRelayerBasicTest {
         mintUSDC(sourceChain, address(this), 5000e18);
         helloTarget = new HelloUSDC(
             address(relayerTarget),
-            address(tokenBridgeTarget),
             address(wormholeTarget),
             address(targetChainInfo.circleMessageTransmitter),
             address(targetChainInfo.circleTokenMessenger),
@@ -48,10 +46,16 @@ contract HelloUSDCTest is WormholeRelayerBasicTest {
 
     function setUpGeneral() public override {
         vm.selectFork(sourceFork);
-        helloSource.setRegisteredSender(targetChain, toWormholeFormat(address(helloTarget)));
+        helloSource.setRegisteredSender(
+            targetChain,
+            toWormholeFormat(address(helloTarget))
+        );
 
         vm.selectFork(targetFork);
-        helloTarget.setRegisteredSender(sourceChain, toWormholeFormat(address(helloSource)));
+        helloTarget.setRegisteredSender(
+            sourceChain,
+            toWormholeFormat(address(helloSource))
+        );
     }
 
     function testRemoteDeposit() public {
@@ -66,7 +70,10 @@ contract HelloUSDCTest is WormholeRelayerBasicTest {
 
         vm.recordLogs();
         helloSource.sendCrossChainDeposit{value: cost}(
-            targetChain, address(helloTarget), recipient, amount
+            targetChain,
+            address(helloTarget),
+            recipient,
+            amount
         );
         performDelivery();
 

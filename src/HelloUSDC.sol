@@ -9,18 +9,35 @@ contract HelloUSDC is CCTPSender, CCTPReceiver {
 
     constructor(
         address _wormholeRelayer,
-        address _tokenBridge,
         address _wormhole,
         address _circleMessageTransmitter,
         address _circleTokenMessenger,
         address _USDC
     )
-        CCTPBase(_wormholeRelayer, _tokenBridge, _wormhole, _circleMessageTransmitter, _circleTokenMessenger, _USDC)
-    {}
+        CCTPBase(
+            _wormholeRelayer,
+            _wormhole,
+            _circleMessageTransmitter,
+            _circleTokenMessenger,
+            _USDC
+        )
+    {
+        setCCTPDomain(2, 0);
+        setCCTPDomain(6, 1);
+        setCCTPDomain(24, 2);
+        setCCTPDomain(23, 3);
+        setCCTPDomain(30, 6);
+    }
 
-    function quoteCrossChainDeposit(uint16 targetChain) public view returns (uint256 cost) {
+    function quoteCrossChainDeposit(
+        uint16 targetChain
+    ) public view returns (uint256 cost) {
         // Cost of delivering token and payload to targetChain
-        (cost,) = wormholeRelayer.quoteEVMDeliveryPrice(targetChain, 0, GAS_LIMIT);
+        (cost, ) = wormholeRelayer.quoteEVMDeliveryPrice(
+            targetChain,
+            0,
+            GAS_LIMIT
+        );
     }
 
     function sendCrossChainDeposit(
@@ -30,17 +47,20 @@ contract HelloUSDC is CCTPSender, CCTPReceiver {
         uint256 amount
     ) public payable {
         uint256 cost = quoteCrossChainDeposit(targetChain);
-        require(msg.value == cost, "msg.value must be quoteCrossChainDeposit(targetChain)");
+        require(
+            msg.value == cost,
+            "msg.value must be quoteCrossChainDeposit(targetChain)"
+        );
 
         IERC20(USDC).transferFrom(msg.sender, address(this), amount);
 
         bytes memory payload = abi.encode(recipient);
         sendUSDCWithPayloadToEvm(
-            targetChain, 
+            targetChain,
             targetHelloUSDC, // address (on targetChain) to send token and payload to
-            payload, 
+            payload,
             0, // receiver value
-            GAS_LIMIT, 
+            GAS_LIMIT,
             amount
         );
     }
@@ -52,7 +72,7 @@ contract HelloUSDC is CCTPSender, CCTPReceiver {
         uint16, // sourceChain
         bytes32 // deliveryHash
     ) internal override onlyWormholeRelayer {
-        (address recipient) = abi.decode(payload, (address));
+        address recipient = abi.decode(payload, (address));
 
         IERC20(USDC).transfer(recipient, amountUSDCReceived);
     }
