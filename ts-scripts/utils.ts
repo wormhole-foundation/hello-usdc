@@ -1,122 +1,136 @@
-import { ethers, Wallet } from "ethers"
-import { readFileSync, writeFileSync } from "fs"
+import * as fs from 'fs'
+import * as path from 'path'
+import { ethers } from 'ethers'
 
-import { HelloUSDC, HelloUSDC__factory } from "./ethers-contracts"
-
-export interface ChainInfo {
+// Chain configuration type
+export interface ChainConfig {
+  name: string
   description: string
-  chainId: number
+  wormholeChainId: number
   rpc: string
-  tokenBridge: string
   wormholeRelayer: string
-  wormhole: string,
-  cctpTokenMessenger: string,
-  cctpMessageTransmitter: string,
+  cctpTokenMessenger: string
+  cctpMessageTransmitter: string
   USDC: string
 }
 
-export interface Config {
-  chains: ChainInfo[]
-}
-export interface DeployedAddresses {
-  helloUSDC: Record<number, string>
+// Contract deployment info
+export interface ContractInfo {
+  HelloUSDC: string
 }
 
-export function getHelloUSDC(chainId: number) {
-  const deployed = loadDeployedAddresses().helloUSDC[chainId]
-  if (!deployed) {
-    throw new Error(`No deployed hello usdc on chain ${chainId}`)
+// Load chain configuration
+export function loadConfig(): { chains: ChainConfig[] } {
+  const configPath = path.resolve(__dirname, './deploy-config/config.json')
+  if (!fs.existsSync(configPath)) {
+    throw new Error(`Config file not found: ${configPath}`)
   }
-  return HelloUSDC__factory.connect(deployed, getWallet(chainId))
+  return JSON.parse(fs.readFileSync(configPath, 'utf8'))
 }
 
-export function getChain(chainId: number): ChainInfo {
-  const chain = loadConfig().chains.find(c => c.chainId === chainId)!
+// Get chain configuration by name
+export function getChainConfig(chainName: string): ChainConfig {
+  const config = loadConfig()
+  const chain = config.chains.find(c => c.name === chainName)
   if (!chain) {
-    throw new Error(`Chain ${chainId} not found`)
+    const available = config.chains.map(c => c.name).join(', ')
+    throw new Error(`Chain "${chainName}" not found in config. Available: ${available}`)
   }
   return chain
 }
 
-export function getWallet(chainId: number): Wallet {
-  const rpc = loadConfig().chains.find(c => c.chainId === chainId)?.rpc
-  let provider = new ethers.providers.JsonRpcProvider(rpc)
-  if(!process.env.EVM_PRIVATE_KEY) throw Error("No private key provided (use the EVM_PRIVATE_KEY environment variable)")
-  return new Wallet(process.env.EVM_PRIVATE_KEY!, provider)
-}
-
-let _config: Config | undefined
-let _deployed: DeployedAddresses | undefined
-
-export function loadConfig(): Config {
-  if (!_config) {
-    _config = JSON.parse(
-      readFileSync("ts-scripts/testnet/config.json", { encoding: "utf-8" })
-    )
-  }
-  return _config!
-}
-
-export function loadDeployedAddresses(): DeployedAddresses {
-  if (!_deployed) {
-    _deployed = JSON.parse(
-      readFileSync("ts-scripts/testnet/deployedAddresses.json", {
-        encoding: "utf-8",
-      })
-    )
-    if (!deployed) {
-      _deployed = {
-        helloUSDC: [],
+// Get deployment info for a chain
+export function getDeploymentInfo(chainName: string): ContractInfo | null {
+  console.log(`Loading deployment info for ${chainName}`)
+  
+  // Check if we have a saved deployment address
+  const deploymentPath = path.resolve(__dirname, './deploy-config/deployments.json')
+  if (fs.existsSync(deploymentPath)) {
+    try {
+      const deployments = JSON.parse(fs.readFileSync(deploymentPath, 'utf8'))
+      if (deployments[chainName] && deployments[chainName].HelloUSDC) {
+        console.log(`Found existing deployment: ${deployments[chainName].HelloUSDC}`)
+        return deployments[chainName]
       }
+    } catch (e) {
+      console.log(`Could not read deployment file: ${e}`)
     }
   }
-  return _deployed!
+  
+  return null // No existing deployment found
 }
 
-export function storeDeployedAddresses(deployed: DeployedAddresses) {
-  writeFileSync(
-    "ts-scripts/testnet/deployedAddresses.json",
-    JSON.stringify(deployed, undefined, 2)
+// Save deployment info
+export function saveDeploymentInfo(chainName: string, info: ContractInfo): void {
+  const deploymentPath = path.resolve(__dirname, './deploy-config/deployments.json')
+  
+  let deployments: Record<string, ContractInfo> = {}
+  
+  // Load existing deployments if file exists
+  if (fs.existsSync(deploymentPath)) {
+    try {
+      deployments = JSON.parse(fs.readFileSync(deploymentPath, 'utf8'))
+    } catch (e) {
+      console.log(`Could not read existing deployments: ${e}`)
+    }
+  }
+  
+  // Update with new deployment
+  deployments[chainName] = info
+  
+  // Save back to file
+  fs.writeFileSync(deploymentPath, JSON.stringify(deployments, null, 2))
+  console.log(`Deployment info for ${chainName} saved to ${deploymentPath}`)
+}
+
+// Create ethers provider
+export function createProvider(rpc: string): ethers.JsonRpcProvider {
+  return new ethers.JsonRpcProvider(rpc)
+}
+
+// Create wallet from private key
+export function createWallet(provider: ethers.JsonRpcProvider): ethers.Wallet {
+  const privateKey = process.env.PRIVATE_KEY
+  if (!privateKey) {
+    throw new Error('PRIVATE_KEY environment variable not set')
+  }
+  return new ethers.Wallet(privateKey, provider)
+}
+
+// Deploy HelloUSDC contract
+export async function deployHelloUSDC(
+  wallet: ethers.Wallet,
+  config: ChainConfig
+): Promise<string> {
+  console.log(`Deploying HelloUSDC to ${config.description}...`)
+
+  // Deploy contract with constructor parameters
+  const contractFactory = new ethers.ContractFactory(
+    require('../out/HelloUSDC.sol/HelloUSDC.json').abi,
+    require('../out/HelloUSDC.sol/HelloUSDC.json').bytecode.object,
+    wallet
   )
+
+  const contract = await contractFactory.deploy(
+    config.wormholeRelayer,
+    config.cctpMessageTransmitter,
+    config.cctpTokenMessenger,
+    config.USDC
+  )
+
+  await contract.waitForDeployment()
+  const contractAddress = await contract.getAddress()
+
+  console.log('HelloUSDC deployed to:', contractAddress)
+  return contractAddress
 }
 
-export function checkFlag(patterns: string | string[]) {
-  return getArg(patterns, { required: false, isFlag: true })
+// Format USDC amount (6 decimals)
+export function formatUSDC(amount: bigint): string {
+  return ethers.formatUnits(amount, 6)
 }
 
-export function getArg(
-  patterns: string | string[],
-  {
-    isFlag = false,
-    required = true,
-  }: { isFlag?: boolean; required?: boolean } = {
-    isFlag: false,
-    required: true,
-  }
-): string | undefined {
-  let idx: number = -1
-  if (typeof patterns === "string") {
-    patterns = [patterns]
-  }
-  for (const pattern of patterns) {
-    idx = process.argv.findIndex(x => x === pattern)
-    if (idx !== -1) {
-      break
-    }
-  }
-  if (idx === -1) {
-    if (required) {
-      throw new Error(
-        "Missing required cmd line arg: " + JSON.stringify(patterns)
-      )
-    }
-    return undefined
-  }
-  if (isFlag) {
-    return process.argv[idx]
-  }
-  return process.argv[idx + 1]
+// Parse USDC amount to wei
+export function parseUSDC(amount: string): bigint {
+  return ethers.parseUnits(amount, 6)
 }
-
-export const deployed = (x: any) => x.deployed()
-export const wait = (x: any) => x.wait()

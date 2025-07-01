@@ -1,32 +1,23 @@
 {
   "name": "hello-usdc",
   "version": "1.0.0",
-  "main": "ts-scripts/main.ts",
+  "main": "ts-scripts/deploy.ts",
   "repository": "git@github.com:wormhole-foundation/hello-usdc.git",
   "author": "Wormhole Contributors",
   "license": "Apache 2.0",
   "scripts": {
-    "main": "ts-node ./ts-scripts/main.ts",
-    "deploy": "npm run build; npm run deployHelloUSDC",
-    "deployHelloUSDC": "ts-node ./ts-scripts/main.ts --deployHelloUSDC",
-    "build": "npm install; forge build --via-ir; forge remappings > remappings.txt; npm run typechain",
-    "typechain": "typechain --target ethers-v5 --out-dir ./ts-scripts/ethers-contracts ./out/**/*.json",
-    "test": "jest --config ./ts-scripts/jest.config.js",
-    "clean": "rm -rf ts-scripts/ethers-contracts; rm -rf out/;"
+    "build": "forge build",
+    "deploy": "npm run build && ts-node ./ts-scripts/deploy.ts",
+    "test": "forge test",
+    "integration-test": "npm run build && ts-node ./ts-scripts/integration-test.ts",
+    "clean": "rm -rf out/"
   },
   "dependencies": {
-    "@certusone/wormhole-sdk": "^0.10.6-beta.0",
-    "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
-    "@typechain/ethers-v5": "^11.0.0",
-    "ethers": "^5",
-    "ts-node": "^10.9.1",
-    "typechain": "^8.2.0"
+    "ethers": "^6.14.4"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.2",
-    "@types/node": "^20.2.5",
-    "jest": "^29.5.0",
-    "ts-jest": "^29.1.0",
-    "typescript": "^5.1.3"
+    "@types/node": "^22.10.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

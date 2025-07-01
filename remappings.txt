@@ -1,3 +1,6 @@
+IERC20/=lib/wormhole-solidity-sdk/src/interfaces/token/
+SafeERC20/=lib/wormhole-solidity-sdk/src/libraries/
 ds-test/=lib/forge-std/lib/ds-test/src/
 forge-std/=lib/forge-std/src/
+wormhole-sdk/=lib/wormhole-solidity-sdk/src/
 wormhole-solidity-sdk/=lib/wormhole-solidity-sdk/src/

@@ -1,56 +1,86 @@
-# Building Your First Cross-Chain USDC Sending and Receiving Application
+# Hello USDC
 
-This tutorial contains a [solidity contract](https://github.com/wormhole-foundation/hello-usdc/blob/main/src/HelloUSDC.sol) that can be deployed onto any CCTP-supported chain to form a fully functioning cross-chain application with the ability for users to request, from one contract, that USDC is sent to an address on a different chain.
+Cross-chain USDC transfer application using Wormhole's CCTP integration.
 
-## Summary 
+## Quick Start
 
-Included in this [repository](https://github.com/wormhole-foundation/hello-usdc/) is:
+1. **Install dependencies:**
+   ```bash
+   npm install
+   forge install
+   ```
 
-- Example Solidity Code
-- Example Forge local testing setup
-- Testnet Deploy Scripts
-- Example Testnet testing setup
+2. **Set environment variable:**
+   ```bash
+   export PRIVATE_KEY="your_private_key_here"
+   ```
 
-### Environment Setup
+3. **Get testnet USDC:**
+   - Use [Circle's testnet faucet](https://faucet.circle.com/) for USDC on supported chains
 
-- Node 16.14.1 or later, npm 8.5.0 or later: [https://docs.npmjs.com/downloading-and-installing-node-js-and-npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-- forge 0.2.0 or later: [https://book.getfoundry.sh/getting-started/installation](https://book.getfoundry.sh/getting-started/installation)
+4. **Deploy contracts first:**
+   ```bash
+   npm run deploy fuji     # Avalanche Fuji
+   npm run deploy sepolia  # Ethereum Sepolia
+   ```
 
-### Testing Locally
+5. **Run integration test:**
+   ```bash
+   npm run integration-test
+   ```
 
-Clone down the repo, cd into it, then build and run unit tests:
+**Note:** Contracts must be deployed before running the integration test. The test will verify cross-chain transfers between the deployed contracts.
 
+## Manual Deployment
+
+Deploy to specific chains:
 ```bash
-git clone https://github.com/wormhole-foundation/hello-usdc.git
-cd hello-usdc
-npm run build
-forge test --via-ir
+npm run deploy fuji     # Avalanche Fuji
+npm run deploy sepolia  # Ethereum Sepolia
 ```
 
-Expected output is
+## Project Structure
 
-```bash
-Running 1 test for test/HelloUSDC.t.sol:HelloUSDCTest
-[PASS] testCrossChainDeposit() (gas: 1338038)
-Test result: ok. 1 passed; 0 failed; finished in 5.64s
+```
+├── src/
+│   └── HelloUSDC.sol              # Main contract with CCTP integration
+├── test/
+│   └── HelloUSDC.t.sol           # Solidity tests
+├── ts-scripts/
+│   ├── deploy.ts                 # Deployment script
+│   ├── integration-test.ts       # End-to-end test
+│   ├── utils.ts                  # Utility functions
+│   └── deploy-config/
+│       └── config.json           # Chain configurations
+├── foundry.toml                  # Foundry configuration
+├── package.json                  # Node.js dependencies
+└── README.md
 ```
 
-### Deploying to Testnet
+## Configuration
 
-You will need a wallet with some testnet ETH and testnet USDC (eth). 
+Add chains to `ts-scripts/deploy-config/config.json`:
 
-```bash
-EVM_PRIVATE_KEY=your_wallet_private_key npm run deploy
+```json
+{
+  "chainName": {
+    "description": "Chain Name",
+    "wormholeChainId": 123,
+    "rpc": "https://rpc.example.com",
+    "wormholeRelayer": "0x...",
+    "cctpTokenMessenger": "0x...",
+    "cctpMessageTransmitter": "0x...",
+    "USDC": "0x..."
+  }
+}
 ```
 
-### Testing on Testnet
+**Contract Addresses:** Find official CCTP and Wormhole contract addresses in the [Wormhole SDK constants](https://github.com/wormhole-foundation/wormhole-sdk-ts/blob/main/core/base/src/constants/contracts/circle.ts).
 
-You will need a wallet with testnet ETH.
+## Environment Variables
 
-You must have also deployed contracts onto testnet (as described in the above section).
+- `PRIVATE_KEY` - Wallet private key (required)
 
-To test sending and receiving a message on testnet, execute the test as such:
+## License
 
-```bash
-EVM_PRIVATE_KEY=your_wallet_private_key npm run test
-```
+Apache 2.0
