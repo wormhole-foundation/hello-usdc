@@ -1,0 +1,8 @@
+{
+  "fuji": {
+    "HelloUSDC": "0xd4E299684774720b1C09ecb7845704AC1e4fB5DA"
+  },
+  "base-sepolia": {
+    "HelloUSDC": "0x9E413AfC747F10a8839194654FAbD03EaF3A51De"
+  }
+}
