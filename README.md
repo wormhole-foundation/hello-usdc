@@ -1,3 +1,8 @@
+> [!NOTE]
+> This example has been deprecated. Up-to-date EVM and Solana CCTP transfer examples can be found here:
+> - https://github.com/wormholelabs-xyz/example-cctp-with-executor
+> - https://github.com/wormholelabs-xyz/example-cctp-with-executor-svm
+
 # Building Your First Cross-Chain USDC Sending and Receiving Application
 
 This tutorial contains a [solidity contract](https://github.com/wormhole-foundation/hello-usdc/blob/main/src/HelloUSDC.sol) that can be deployed onto any CCTP-supported chain to form a fully functioning cross-chain application with the ability for users to request, from one contract, that USDC is sent to an address on a different chain.
